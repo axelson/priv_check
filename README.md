@@ -40,7 +40,7 @@ by adding `priv_check` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:priv_check, "~> 0.1.0"}
+    {:priv_check, "~> 0.1.0", runtime: false}
   ]
 end
 ```
