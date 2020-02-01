@@ -1,8 +1,4 @@
 defmodule PrivCheckTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest PrivCheck
-
-  test "greets the world" do
-    assert PrivCheck.hello() == :world
-  end
 end
