@@ -42,20 +42,14 @@ defmodule PrivCheck.ReferenceChecker do
     for {{mod, fun, arity} = mfa, file, line} <- remote_function_calls,
         !MapSet.member?(app_modules, mod),
         into: [] do
-      case PrivCheck.DocChecker.mfa_visibility(mfa) do
-        :public ->
-          nil
+      if PrivCheck.DocChecker.public_fun?(mfa) do
+        nil
+      else
+        message =
+          "#{inspect(mod)}.#{fun}/#{arity} is not a public function and should not be " <>
+            "called other applications."
 
-        :private ->
-          message =
-            "#{inspect(mod)}.#{fun}/#{arity} is not a public function and should not be " <>
-              "called other applications."
-
-          diagnostic_error(message, file: file, position: line)
-
-        _ ->
-          # TODO: remove this catch-all
-          nil
+        diagnostic_error(message, file: file, position: line)
       end
     end
   end
