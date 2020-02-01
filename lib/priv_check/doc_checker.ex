@@ -68,11 +68,7 @@ defmodule PrivCheck.DocChecker do
                 :not_found
 
               arities ->
-                if arity in arities do
-                  :public
-                else
-                  :not_found
-                end
+                if arity in arities, do: :public, else: :not_found
             end
 
           other ->
