@@ -12,7 +12,8 @@ defmodule PrivCheck.MixProject do
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       docs: docs(),
-      dialyzer: dialyzer()
+      dialyzer: dialyzer(),
+      package: package()
     ]
   end
 
@@ -47,6 +48,21 @@ defmodule PrivCheck.MixProject do
   defp dialyzer() do
     [
       plt_add_apps: [:mix]
+    ]
+  end
+
+  defp package() do
+    [
+      description: "Check for private API usage at compile-time",
+      maintainers: ["Jason Axelson"],
+      licenses: ["MIT"],
+      links: %{
+        "Github" => "https://github.com/axelson/priv_check",
+        "Changelog" =>
+          "https://github.com/axelson/blob/#{@version}/Changelog.md##{
+            String.replace(@version, ".", "")
+          }"
+      }
     ]
   end
 end
