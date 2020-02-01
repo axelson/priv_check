@@ -83,7 +83,7 @@ defmodule PrivCheck.ReferenceChecker do
 
   def diagnostic_error(message, opts \\ []) do
     %Mix.Task.Compiler.Diagnostic{
-      compiler_name: "boundary",
+      compiler_name: "priv_check",
       details: nil,
       file: "unknown",
       message: message,
