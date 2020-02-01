@@ -40,7 +40,23 @@ by adding `priv_check` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:priv_check, "~> 0.1.0", runtime: false}
+    {:priv_check, "~> 0.1.0", only: :dev, runtime: false},
+  ]
+end
+```
+
+In your project's `mix.exs` file in your `project` function add `:priv_check` to
+the list of compilers.
+
+```elixir
+def project do
+  [
+    ...
+    compilers: [:priv_check] ++ Mix.compilers(),
+
+    # If you're using Phoenix it will probably look a little more like this instead:
+    compilers: [:priv_check, :phoenix, :gettext] ++ Mix.compilers(),
+    ...
   ]
 end
 ```

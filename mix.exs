@@ -1,10 +1,12 @@
 defmodule PrivCheck.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+
   def project do
     [
       app: :priv_check,
-      version: "0.1.0",
+      version: @version,
       elixir: ">= 1.10.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -36,7 +38,9 @@ defmodule PrivCheck.MixProject do
   defp docs() do
     [
       main: "PrivCheck",
-      extras: ["README.md"]
+      extras: ["README.md"],
+      source_url: "https://github.com/axelson/priv_check/",
+      source_ref: @version
     ]
   end
 
