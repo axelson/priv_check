@@ -11,15 +11,12 @@ defmodule PrivCheck.ReferenceChecker do
       remote_macro_calls: remote_macro_calls
     } = traces
 
-    # IO.inspect(remote_macro_calls, label: "remote_macro_calls")
     macro_calls = build_public_macro_calls_map(remote_macro_calls, app_modules)
-    IO.inspect(macro_calls, label: "macro_calls")
 
     (reference_errors(alias_references, app_modules) ++
        remote_function_call_errors(remote_function_calls, app_modules))
     |> Enum.reject(&(&1 == nil))
     |> Enum.reject(&maybe_generated_code?(&1, macro_calls))
-    |> IO.inspect(label: "diag")
   end
 
   defp maybe_generated_code?(diagnostic, macro_calls) do
@@ -35,7 +32,6 @@ defmodule PrivCheck.ReferenceChecker do
         PrivCheck.DocChecker.public_fun?(mfa),
         into: %{} do
       {{file, line}, mfa}
-      |> IO.inspect(label: "inserting")
     end
   end
 

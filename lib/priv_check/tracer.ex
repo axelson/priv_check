@@ -39,26 +39,28 @@ defmodule PrivCheck.Tracer do
 
   def traces, do: Agent.get(__MODULE__, fn state -> state end)
 
+  defp relative_path(file_path) do
+    Path.relative_to_cwd(file_path)
+  end
+
   def trace({:remote_function, meta, module, name, arity}, env) do
     unless ignore_module?(module) || ignore_mfa?({module, name, arity}) do
       mfa = {module, name, arity}
-      register_remote_function_call({mfa, env.file, meta[:line]})
+      register_remote_function_call({mfa, relative_path(env.file), meta[:line]})
     end
 
     :ok
   end
 
   def trace({:remote_macro, meta, module, name, arity}, env) do
-    IO.puts("trace remote macro: #{module}, #{name}, #{arity}")
-    IO.inspect(meta, label: "meta")
     mfa = {module, name, arity}
-    register_remote_macro_call({mfa, env.file, meta[:line]})
+    register_remote_macro_call({mfa, relative_path(env.file), meta[:line]})
     :ok
   end
 
   def trace({:alias_reference, meta, module}, env) do
     unless ignore_module?(module) do
-      register_alias_reference({module, env.file, meta[:line]})
+      register_alias_reference({module, relative_path(env.file), meta[:line]})
     end
 
     :ok

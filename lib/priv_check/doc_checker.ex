@@ -19,13 +19,12 @@ defmodule PrivCheck.DocChecker do
     end
   end
 
-  def public_fun?({mod, fun, arity} = mfa) do
-    case mfa_visibility({mod, fun, arity}) |> IO.inspect(label: "mfa vis") do
+  def public_fun?({mod, fun, arity}) do
+    case mfa_visibility({mod, fun, arity}) do
       :public -> true
       :private -> false
-      :not_found -> true
+      :not_found -> false
     end
-    |> IO.inspect(label: "public_fun?(#{inspect(mfa)})")
   end
 
   @doc """
@@ -53,18 +52,34 @@ defmodule PrivCheck.DocChecker do
   @spec mfa_visibility(mfa()) :: visibility()
   def mfa_visibility({mod, fun, arity}) do
     case Code.fetch_docs(mod) do
-      # No @moduledoc annotation
+      # Module has no @moduledoc annotation
       {:docs_v1, _line, :elixir, _format, :none, _metadata, docs} ->
         fun_visibility(fun, arity, docs)
 
-      # @moduledoc false
+      # Module has @moduledoc false
       {:docs_v1, _line, :elixir, _format, :hidden, _metadata, _docs} ->
         :private
 
       {:docs_v1, _line, :elixir, _format, moduledocs, _metadata, docs} when is_map(moduledocs) ->
-        fun_visibility(fun, arity, docs)
+        case fun_visibility(fun, arity, docs) do
+          :not_found ->
+            case Keyword.get_values(mod.__info__(:functions), fun) do
+              [] ->
+                :not_found
 
-      {:error, _} ->
+              arities ->
+                if arity in arities do
+                  :public
+                else
+                  :not_found
+                end
+            end
+
+          other ->
+            other
+        end
+
+      {:error, _error} ->
         :not_found
     end
   end
