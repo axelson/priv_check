@@ -9,7 +9,7 @@ called.
 
 ## Status
 
-Experimental, and lightly tested, but usable.
+Experimental, and lightly tested.
 
 ## Raison D'etre
 
@@ -85,6 +85,10 @@ after macros generate code, calling a macro like `Logger.info/2` would result in
 a warning since the generated code calls a hidden function. In order to not
 raise false positives on such code, PrivCheck ignores any lines that call a
 remote macro.
+
+## Known Issues
+
+* Doesn't currently work for umbrella projects
 
 ## Related Concepts and Libraries
 
