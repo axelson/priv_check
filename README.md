@@ -101,3 +101,4 @@ remote macro.
   * https://hexdocs.pm/elixir/Kernel.html#defstruct/1-types
 * Built-in private modules proposal:
   https://elixirforum.com/t/proposal-private-modules-general-discussion/19374/1
+* Jose Valim's experiment in adding `defmodulep`: https://github.com/josevalim/defmodulep
