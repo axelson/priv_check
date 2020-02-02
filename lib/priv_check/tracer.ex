@@ -18,12 +18,13 @@ defmodule PrivCheck.Tracer do
   @type remote_macro_call :: {mfa(), file_name :: String.t(), line :: pos_integer()}
 
   @ignored_modules [
+    :elixir_def,
+    :elixir_module,
+    :elixir_utils,
     Kernel.LexicalTracker
   ]
 
   @ignored_mfa [
-    # {Logger, :__do_log__, 3},
-    # {Logger, :__should_log__, 2},
     {Module, :__put_attribute__, 4}
   ]
 
