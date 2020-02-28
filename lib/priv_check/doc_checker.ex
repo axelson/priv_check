@@ -24,6 +24,7 @@ defmodule PrivCheck.DocChecker do
       :public -> true
       :private -> false
       :not_found -> false
+      :unknown -> true
     end
   end
 
@@ -49,7 +50,7 @@ defmodule PrivCheck.DocChecker do
     end
   end
 
-  @spec mfa_visibility(mfa()) :: visibility()
+  @spec mfa_visibility(mfa()) :: visibility() | :unknown
   def mfa_visibility({mod, fun, arity}) do
     case Code.fetch_docs(mod) do
       # Module has no @moduledoc annotation
@@ -65,7 +66,13 @@ defmodule PrivCheck.DocChecker do
           :not_found ->
             case Keyword.get_values(mod.__info__(:functions), fun) do
               [] ->
-                :not_found
+                case Keyword.get_values(mod.__info__(:macros), fun) do
+                  [] ->
+                    :not_found
+
+                  arities ->
+                    if arity in arities, do: :public, else: :not_found
+                end
 
               arities ->
                 if arity in arities, do: :public, else: :not_found
@@ -75,8 +82,8 @@ defmodule PrivCheck.DocChecker do
             other
         end
 
-      {:error, _error} ->
-        :not_found
+      {:error, error} ->
+        :unknown
     end
   end
 

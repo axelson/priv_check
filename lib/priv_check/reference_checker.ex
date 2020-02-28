@@ -1,8 +1,7 @@
+# Checks if a traced reference (alias_reference or remtoe_function call) was
+# to a private module or function, building mix diagnotic errors if so
 defmodule PrivCheck.ReferenceChecker do
   @moduledoc false
-
-  # Checks if a traced reference (alias_reference or remtoe_function call) was
-  # to a private module or function, building mix diagnotic errors if so
 
   def diagnostics(traces, app_modules) do
     %PrivCheck.Tracer.State{
