@@ -33,7 +33,7 @@ defmodule Mix.Tasks.Compile.PrivCheck do
 
     print_diagnostics(diagnostics)
 
-    {status(diagnostics, argv), [diagnostics | existing_diagnostics]}
+    {status(diagnostics, argv), Enum.concat(diagnostics, existing_diagnostics)}
   end
 
   def print_diagnostics(diagnostics) do
