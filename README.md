@@ -11,6 +11,9 @@ called.
 
 Experimental, and lightly tested.
 
+TODO:
+- [ ] Ignore generated code
+
 ## Raison D'etre
 
 In Elixir it is quite easy to use private API's without realizing, especially if
