@@ -4,11 +4,13 @@ defmodule Mix.Tasks.Compile.PrivCheck do
   """
   use Mix.Task.Compiler
 
+  @recursive true
+
   @tracer_module PrivCheck.Tracer
 
   @impl Mix.Task.Compiler
   def run(argv) do
-    {:ok, _} = PrivCheck.Tracer.start_link([])
+    _ = PrivCheck.Tracer.start_link([])
     Mix.Task.Compiler.after_compiler(:app, &after_compiler(&1, argv))
     tracers = Code.get_compiler_option(:tracers)
     Code.put_compiler_option(:tracers, [@tracer_module | tracers])
