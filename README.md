@@ -12,7 +12,9 @@ called.
 Experimental, and lightly tested.
 
 TODO:
-- [ ] Ignore generated code
+- [x] Ignore generated code
+- [ ] Fix all errors from a default phoenix application
+- [ ] Store the warnings in a file so they can be loaded on subsequent compiles
 
 ## Raison D'etre
 
