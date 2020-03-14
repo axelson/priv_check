@@ -27,7 +27,7 @@ defmodule PrivCheck.IntegrationTest do
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:20",
              warning:
-               "ExampleDep.Mixed.private/0 is not a public function and should not be called other applications."
+               "ExampleDep.Mixed.private/0 is not a public function and should not be called from other applications."
            })
 
     assert Enum.member?(warnings, %{
@@ -39,7 +39,7 @@ defmodule PrivCheck.IntegrationTest do
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:21",
              warning:
-               "ExampleDep.Private.add/2 is not a public function and should not be called other applications."
+               "ExampleDep.Private.add/2 is not a public function and should not be called from other applications."
            })
 
     assert Enum.member?(warnings, %{
@@ -51,7 +51,7 @@ defmodule PrivCheck.IntegrationTest do
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:22",
              warning:
-               "ExampleDep.Private.with_doc/0 is not a public function and should not be called other applications."
+               "ExampleDep.Private.with_doc/0 is not a public function and should not be called from other applications."
            })
 
     assert length(warnings) == 6

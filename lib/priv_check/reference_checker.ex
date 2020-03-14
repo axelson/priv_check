@@ -47,7 +47,7 @@ defmodule PrivCheck.ReferenceChecker do
       else
         message =
           "#{inspect(mod)}.#{fun}/#{arity} is not a public function and should not be " <>
-            "called other applications."
+            "called from other applications."
 
         diagnostic_error(message, nil, file: Path.relative_to_cwd(file), position: line)
       end
