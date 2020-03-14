@@ -30,7 +30,7 @@ defmodule PrivCheck.ReferenceChecker do
         !MapSet.member?(app_modules, mod),
         PrivCheck.DocChecker.public_fun?(mfa),
         into: %{} do
-      {{file, line}, mfa}
+      {{Path.relative_to_cwd(file), line}, mfa}
     end
   end
 
@@ -38,7 +38,8 @@ defmodule PrivCheck.ReferenceChecker do
           Mix.Task.Compiler.Diagnostic.t()
         ]
   def remote_function_call_errors(remote_function_calls, app_modules) do
-    for {{mod, fun, arity} = mfa, file, line} <- remote_function_calls,
+    for {{mod, fun, arity} = mfa, called_from_module, file, line} <- remote_function_calls,
+        !in_macro_generated_func(called_from_module, file, line),
         !MapSet.member?(app_modules, mod),
         into: [] do
       if PrivCheck.DocChecker.public_fun?(mfa) do
@@ -48,7 +49,7 @@ defmodule PrivCheck.ReferenceChecker do
           "#{inspect(mod)}.#{fun}/#{arity} is not a public function and should not be " <>
             "called other applications."
 
-        diagnostic_error(message, file: file, position: line)
+        diagnostic_error(message, nil, file: Path.relative_to_cwd(file), position: line)
       end
     end
   end
@@ -57,8 +58,9 @@ defmodule PrivCheck.ReferenceChecker do
           Mix.Task.Compiler.Diagnostic.t()
         ]
   def reference_errors(alias_references, app_modules) do
-    for {referenced_module, file, line} <- alias_references,
+    for {referenced_module, file, line, defined_in_module} <- alias_references,
         !MapSet.member?(app_modules, referenced_module),
+        !in_macro_generated_func(defined_in_module, file, line),
         into: [] do
       case PrivCheck.DocChecker.mod_visibility(referenced_module) do
         :public ->
@@ -69,8 +71,10 @@ defmodule PrivCheck.ReferenceChecker do
             "#{referenced_module} is not a public module and should not be referenced " <>
               "from other applications."
 
-          diagnostic_error(message,
-            file: file,
+          diagnostic_error(
+            message,
+            nil,
+            file: Path.relative_to_cwd(file),
             position: line
           )
 
@@ -80,10 +84,20 @@ defmodule PrivCheck.ReferenceChecker do
     end
   end
 
-  def diagnostic_error(message, opts \\ []) do
+  # Ignore warnings from code generated with macros with `location: :keep`
+  # These are detected because the source file location does not match the
+  # source file that it was called from
+  defp in_macro_generated_func(module, file, _line) do
+    case module.module_info(:compile)[:source] do
+      nil -> true
+      path -> !String.contains?(file, to_string(path))
+    end
+  end
+
+  def diagnostic_error(message, details, opts \\ []) do
     %Mix.Task.Compiler.Diagnostic{
       compiler_name: "priv_check",
-      details: nil,
+      details: details,
       file: "unknown",
       message: message,
       position: nil,

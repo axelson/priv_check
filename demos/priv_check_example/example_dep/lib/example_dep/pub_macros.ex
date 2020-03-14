@@ -7,6 +7,14 @@ defmodule ExampleDep.PubMacros do
     end
   end
 
+  defmacro expand_funcs do
+    quote location: :keep, unquote: false do
+      def good_func do
+        ExampleDep.Private.add(1, 2)
+      end
+    end
+  end
+
   @doc false
   def hidden_func do
     11

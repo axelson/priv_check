@@ -82,7 +82,7 @@ defmodule PrivCheck.DocChecker do
             other
         end
 
-      {:error, error} ->
+      {:error, _error} ->
         :unknown
     end
   end

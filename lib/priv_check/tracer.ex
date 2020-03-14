@@ -9,23 +9,37 @@ defmodule PrivCheck.Tracer do
     @moduledoc """
     Recorded traces
     """
+
     defstruct [:alias_references, :remote_function_calls, :remote_macro_calls]
+
+    @type t :: %__MODULE__{
+            alias_references: nil | String.t()
+          }
   end
 
-  @type alias_reference :: {module(), file_name :: String.t(), line :: pos_integer()}
+  @type alias_reference :: {module(), file_name :: String.t(), line :: pos_integer(), module()}
 
-  @type remote_function_call :: {mfa(), file_name :: String.t(), line :: pos_integer()}
+  @type remote_function_call :: {mfa(), module(), file_name :: String.t(), line :: pos_integer()}
   @type remote_macro_call :: {mfa(), file_name :: String.t(), line :: pos_integer()}
 
   @ignored_modules [
     :elixir_def,
     :elixir_module,
     :elixir_utils,
-    Kernel.LexicalTracker
+    Kernel.LexicalTracker,
+    Kernel.Typespec,
+    Kernel.Utils,
+    # The fact that this is needed seems to point to a possible bug in compiler tracing
+    Phoenix.Router.Scope
   ]
 
   @ignored_mfa [
+    {Module, :__get_attribute__, 3},
     {Module, :__put_attribute__, 4}
+  ]
+
+  @ignored_files [
+    "lib/gen_server.ex"
   ]
 
   def start_link(_) do
@@ -40,14 +54,11 @@ defmodule PrivCheck.Tracer do
 
   def traces, do: Agent.get(__MODULE__, fn state -> state end)
 
-  defp relative_path(file_path) do
-    Path.relative_to_cwd(file_path)
-  end
-
   def trace({:remote_function, meta, module, name, arity}, env) do
-    unless ignore_module?(module) || ignore_mfa?({module, name, arity}) do
+    unless ignore_module?(module) || ignore_mfa?({module, name, arity}) || ignore_file?(env.file) do
       mfa = {module, name, arity}
-      register_remote_function_call({mfa, relative_path(env.file), meta[:line]})
+
+      register_remote_function_call({mfa, env.module, env.file, meta[:line]})
     end
 
     :ok
@@ -55,13 +66,13 @@ defmodule PrivCheck.Tracer do
 
   def trace({:remote_macro, meta, module, name, arity}, env) do
     mfa = {module, name, arity}
-    register_remote_macro_call({mfa, relative_path(env.file), meta[:line]})
+    register_remote_macro_call({mfa, env.file, meta[:line]})
     :ok
   end
 
   def trace({:alias_reference, meta, module}, env) do
     unless ignore_module?(module) do
-      register_alias_reference({module, relative_path(env.file), meta[:line]})
+      register_alias_reference({module, env.file, meta[:line], env.module})
     end
 
     :ok
@@ -103,4 +114,10 @@ defmodule PrivCheck.Tracer do
   end
 
   defp ignore_mfa?(_), do: false
+
+  for file <- @ignored_files do
+    defp ignore_file?(unquote(file)), do: true
+  end
+
+  defp ignore_file?(_), do: false
 end

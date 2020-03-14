@@ -19,9 +19,15 @@ defmodule PrivCheck.IntegrationTest do
     warnings = warnings(output)
 
     assert Enum.member?(warnings, %{
-             location: "lib/priv_check_example.ex:22",
+             location: "lib/priv_check_example.ex:17",
              warning:
                "Elixir.ExampleDep.Private is not a public module and should not be referenced from other applications."
+           })
+
+    assert Enum.member?(warnings, %{
+             location: "lib/priv_check_example.ex:20",
+             warning:
+               "ExampleDep.Mixed.private/0 is not a public function and should not be called other applications."
            })
 
     assert Enum.member?(warnings, %{
@@ -31,7 +37,13 @@ defmodule PrivCheck.IntegrationTest do
            })
 
     assert Enum.member?(warnings, %{
-             location: "lib/priv_check_example.ex:17",
+             location: "lib/priv_check_example.ex:21",
+             warning:
+               "ExampleDep.Private.add/2 is not a public function and should not be called other applications."
+           })
+
+    assert Enum.member?(warnings, %{
+             location: "lib/priv_check_example.ex:22",
              warning:
                "Elixir.ExampleDep.Private is not a public module and should not be referenced from other applications."
            })
@@ -42,17 +54,7 @@ defmodule PrivCheck.IntegrationTest do
                "ExampleDep.Private.with_doc/0 is not a public function and should not be called other applications."
            })
 
-    assert Enum.member?(warnings, %{
-             location: "lib/priv_check_example.ex:21",
-             warning:
-               "ExampleDep.Private.add/2 is not a public function and should not be called other applications."
-           })
-
-    assert Enum.member?(warnings, %{
-             location: "lib/priv_check_example.ex:20",
-             warning:
-               "ExampleDep.Mixed.private/0 is not a public function and should not be called other applications."
-           })
+    assert length(warnings) == 6
   end
 
   test "exit code is zero with default options" do

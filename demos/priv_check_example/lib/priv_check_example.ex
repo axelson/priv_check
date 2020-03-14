@@ -20,9 +20,10 @@ defmodule PrivCheckExample do
     ExampleDep.Mixed.private()
     ExampleDep.Private.add(1, 2)
     ExampleDep.Private.with_doc()
+    # Same application so no warning
     PrivCheckExample.Private.add(1, 2)
 
-    # Expected not to be caught
+    # Expected be ignored
     ExampleDep.PubMacros.expand_priv()
 
     # Cannot be detected
@@ -31,4 +32,6 @@ defmodule PrivCheckExample do
 
     :ok
   end
+
+  ExampleDep.PubMacros.expand_funcs()
 end

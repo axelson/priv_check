@@ -47,6 +47,10 @@ defmodule PrivCheck.DocCheckerTest do
       assert DocChecker.public_fun?({ExampleHiddenModule, :doc_false_func, 0}) == false
       assert DocChecker.public_fun?({ExampleHiddenModule, :non_existant_func, 0}) == false
     end
+
+    test "Logger macro calls" do
+      assert DocChecker.public_fun?({Logger, :warn, 1}) == true
+    end
   end
 
   describe "mod_visiblity/1" do

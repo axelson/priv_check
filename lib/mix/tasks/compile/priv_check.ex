@@ -1,7 +1,11 @@
 defmodule Mix.Tasks.Compile.PrivCheck do
   @moduledoc """
-  Main module responsible for checking
+  Compiler that checks for calls to code that is marked as private, typically
+  via `@moduledoc false` and `@doc false`.
+
+  This module is responsible for running the compiler and formatting warnings
   """
+
   use Mix.Task.Compiler
 
   @recursive true
