@@ -13,7 +13,7 @@ Experimental, and lightly tested.
 
 TODO:
 - [x] Ignore generated code
-- [ ] Fix all errors from a default phoenix application
+- [x] Fix all errors from a default phoenix application
 - [ ] Store the warnings in a file so they can be loaded on subsequent compiles
 
 ## Raison D'etre

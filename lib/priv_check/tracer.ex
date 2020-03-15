@@ -38,9 +38,7 @@ defmodule PrivCheck.Tracer do
     {Module, :__put_attribute__, 4}
   ]
 
-  @ignored_files [
-    "lib/gen_server.ex"
-  ]
+  @ignored_files []
 
   def start_link(_) do
     initial_state = %State{
@@ -55,13 +53,25 @@ defmodule PrivCheck.Tracer do
   def traces, do: Agent.get(__MODULE__, fn state -> state end)
 
   def trace({:remote_function, meta, module, name, arity}, env) do
-    unless ignore_module?(module) || ignore_mfa?({module, name, arity}) || ignore_file?(env.file) do
-      mfa = {module, name, arity}
+    cond do
+      ignore_module?(module) ->
+        :ok
 
-      register_remote_function_call({mfa, env.module, env.file, meta[:line]})
+      ignore_mfa?({module, name, arity}) ->
+        :ok
+
+      ignore_file?(env.file) ->
+        :ok
+
+      # Code without a line number is generated from a macro (often from a def inside of a __using__ macro)
+      meta[:line] == nil ->
+        :ok
+
+      true ->
+        mfa = {module, name, arity}
+        register_remote_function_call({mfa, env.module, env.file, meta[:line]})
+        :ok
     end
-
-    :ok
   end
 
   def trace({:remote_macro, meta, module, name, arity}, env) do
