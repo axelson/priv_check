@@ -1,4 +1,4 @@
-defmodule PrivCheck.IntegrationTest do
+defmodule PrivCheck.IntegrationPrivCheckExampleTest do
   use ExUnit.Case, async: true
 
   setup_all do
