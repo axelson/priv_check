@@ -15,6 +15,7 @@ TODO:
 - [x] Ignore generated code
 - [x] Fix all errors from a default phoenix application
 - [ ] Store the warnings in a file so they can be loaded on subsequent compiles
+- [ ] Provide configuration
 
 ## Raison D'etre
 
