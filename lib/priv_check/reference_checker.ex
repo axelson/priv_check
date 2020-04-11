@@ -10,10 +10,12 @@ defmodule PrivCheck.ReferenceChecker do
       remote_macro_calls: remote_macro_calls
     } = traces
 
+    config = PrivCheck.Config.from_file_system()
+
     macro_calls = build_public_macro_calls_map(remote_macro_calls, app_modules)
 
-    (reference_errors(alias_references, app_modules) ++
-       remote_function_call_errors(remote_function_calls, app_modules))
+    (reference_errors(alias_references, app_modules, config) ++
+       remote_function_call_errors(remote_function_calls, app_modules, config))
     |> Enum.reject(&(&1 == nil))
     |> Enum.reject(&maybe_generated_code?(&1, macro_calls))
   end
@@ -35,12 +37,13 @@ defmodule PrivCheck.ReferenceChecker do
     end
   end
 
-  @spec remote_function_call_errors([PrivCheck.Tracer.remote_function_call()], any) :: [
+  @spec remote_function_call_errors([PrivCheck.Tracer.remote_function_call()], any, any) :: [
           Mix.Task.Compiler.Diagnostic.t()
         ]
-  def remote_function_call_errors(remote_function_calls, app_modules) do
+  def remote_function_call_errors(remote_function_calls, app_modules, config) do
     for {{mod, fun, arity} = mfa, called_from_module, file, line} <- remote_function_calls,
         !in_macro_generated_func(called_from_module, file, line),
+        !user_config_ignored?(file, mod, config),
         !MapSet.member?(app_modules, mod),
         into: [] do
       if PrivCheck.DocChecker.public_fun?(mfa) do
@@ -55,12 +58,21 @@ defmodule PrivCheck.ReferenceChecker do
     end
   end
 
-  @spec reference_errors([PrivCheck.Tracer.alias_reference()], any) :: [
+  def user_config_ignored?(file, called_module, config) do
+    alias PrivCheck.Config
+    path = Path.relative_to_cwd(file)
+
+    Config.ignore_calls_from_file(config, path) ||
+      Config.ignore_references_to_module(config, called_module)
+  end
+
+  @spec reference_errors([PrivCheck.Tracer.alias_reference()], any, any) :: [
           Mix.Task.Compiler.Diagnostic.t()
         ]
-  def reference_errors(alias_references, app_modules) do
+  def reference_errors(alias_references, app_modules, config) do
     for {referenced_module, file, line, defined_in_module} <- alias_references,
         !MapSet.member?(app_modules, referenced_module),
+        !user_config_ignored?(file, referenced_module, config),
         !in_macro_generated_func(defined_in_module, file, line),
         into: [] do
       case PrivCheck.DocChecker.mod_visibility(referenced_module) do

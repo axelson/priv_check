@@ -15,7 +15,7 @@ TODO:
 - [x] Ignore generated code
 - [x] Fix all errors from a default phoenix application
 - [x] Store the traces in a file so the warnings can be re-generated on partial compiles
-- [ ] Provide configuration (allow users to ignore warnings)
+- [x] Provide configuration (allow users to ignore warnings)
 
 ## Raison D'etre
 
@@ -68,6 +68,22 @@ end
 ```
 
 Then run `mix clean` and then `mix compile`
+
+## Configuration
+
+A configuration file can be provided that allows you to configure the behavior
+of PrivCheck. In the root of your repository (same directory that has the
+`mix.exs`) add a `.priv_check.exs` file. Here are some sample contents:
+
+```
+%{
+  # Relative path to files to skip checks for
+  ignored_files: ["lib/ignored.ex"],
+
+  # List of modules that are private, but warnings should be ignored
+  ignore_references_to_modules: []
+}
+```
 
 ## Nomenclature: Private APIs vs Hidden modules
 
