@@ -4,7 +4,7 @@ defmodule PrivCheck.ReferenceChecker do
   @moduledoc false
 
   def diagnostics(traces, app_modules) do
-    %PrivCheck.Tracer.State{
+    %PrivCheck.TracesManifest.Traces{
       alias_references: alias_references,
       remote_function_calls: remote_function_calls,
       remote_macro_calls: remote_macro_calls
@@ -26,7 +26,8 @@ defmodule PrivCheck.ReferenceChecker do
   end
 
   def build_public_macro_calls_map(remote_macro_calls, app_modules) do
-    for {{mod, _fun, _arity} = mfa, file, line} <- remote_macro_calls,
+    for {{mod, _fun, _arity} = mfa, _caller, file, line} <- remote_macro_calls,
+        # Ignore calls into the current application
         !MapSet.member?(app_modules, mod),
         PrivCheck.DocChecker.public_fun?(mfa),
         into: %{} do

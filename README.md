@@ -14,8 +14,8 @@ Experimental, and lightly tested.
 TODO:
 - [x] Ignore generated code
 - [x] Fix all errors from a default phoenix application
-- [ ] Store the warnings in a file so they can be loaded on subsequent compiles
-- [ ] Provide configuration
+- [x] Store the traces in a file so the warnings can be re-generated on partial compiles
+- [ ] Provide configuration (allow users to ignore warnings)
 
 ## Raison D'etre
 
@@ -66,6 +66,8 @@ def project do
   ]
 end
 ```
+
+Then run `mix clean` and then `mix compile`
 
 ## Nomenclature: Private APIs vs Hidden modules
 

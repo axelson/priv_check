@@ -4,6 +4,7 @@ defmodule PrivCheck.Tracer do
   @moduledoc false
 
   use Agent
+  require Logger
 
   defmodule State do
     @moduledoc """
@@ -17,10 +18,13 @@ defmodule PrivCheck.Tracer do
           }
   end
 
-  @type alias_reference :: {module(), file_name :: String.t(), line :: pos_integer(), module()}
+  @type alias_reference ::
+          {module(), file_name :: String.t(), line :: pos_integer(), caller :: module()}
 
-  @type remote_function_call :: {mfa(), module(), file_name :: String.t(), line :: pos_integer()}
-  @type remote_macro_call :: {mfa(), file_name :: String.t(), line :: pos_integer()}
+  @type remote_function_call ::
+          {mfa(), caller :: module(), file_name :: String.t(), line :: pos_integer()}
+  @type remote_macro_call ::
+          {mfa(), caller :: module(), file_name :: String.t(), line :: pos_integer()}
 
   @ignored_modules [
     :elixir_def,
@@ -50,8 +54,6 @@ defmodule PrivCheck.Tracer do
     Agent.start_link(fn -> initial_state end, name: __MODULE__)
   end
 
-  def traces, do: Agent.get(__MODULE__, fn state -> state end)
-
   def trace({:remote_function, meta, module, name, arity}, env) do
     cond do
       ignore_module?(module) ->
@@ -69,6 +71,7 @@ defmodule PrivCheck.Tracer do
 
       true ->
         mfa = {module, name, arity}
+        Logger.debug("remote_function call #{inspect(mfa)} from #{env.module}")
         register_remote_function_call({mfa, env.module, env.file, meta[:line]})
         :ok
     end
@@ -76,7 +79,8 @@ defmodule PrivCheck.Tracer do
 
   def trace({:remote_macro, meta, module, name, arity}, env) do
     mfa = {module, name, arity}
-    register_remote_macro_call({mfa, env.file, meta[:line]})
+    Logger.debug("remote_macro call #{inspect(mfa)} from #{env.module}")
+    register_remote_macro_call({mfa, env.module, env.file, meta[:line]})
     :ok
   end
 
@@ -94,6 +98,9 @@ defmodule PrivCheck.Tracer do
 
   @spec register_alias_reference(alias_reference()) :: :ok
   def register_alias_reference(alias_reference) do
+    {_module, _file, _line, caller} = alias_reference
+    PrivCheck.TracesManifest.add_trace(caller, :alias_reference, alias_reference)
+
     Agent.update(__MODULE__, fn state ->
       %State{state | alias_references: [alias_reference | state.alias_references]}
     end)
@@ -101,6 +108,9 @@ defmodule PrivCheck.Tracer do
 
   @spec register_remote_function_call(remote_function_call()) :: :ok
   def register_remote_function_call(remote_function_call) do
+    {_mfa, caller, _file, _line} = remote_function_call
+    PrivCheck.TracesManifest.add_trace(caller, :function_call, remote_function_call)
+
     Agent.update(__MODULE__, fn state ->
       %State{state | remote_function_calls: [remote_function_call | state.remote_function_calls]}
     end)
@@ -108,6 +118,9 @@ defmodule PrivCheck.Tracer do
 
   @spec register_remote_macro_call(remote_macro_call()) :: :ok
   def register_remote_macro_call(remote_macro_call) do
+    {_mfa, caller, _file, _line} = remote_macro_call
+    PrivCheck.TracesManifest.add_trace(caller, :macro_call, remote_macro_call)
+
     Agent.update(__MODULE__, fn state ->
       %State{state | remote_macro_calls: [remote_macro_call | state.remote_macro_calls]}
     end)

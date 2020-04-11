@@ -15,6 +15,8 @@ defmodule Mix.Tasks.Compile.PrivCheck do
   @impl Mix.Task.Compiler
   def run(argv) do
     _ = PrivCheck.Tracer.start_link([])
+    _ = PrivCheck.TracesManifest.start_link()
+
     Mix.Task.Compiler.after_compiler(:app, &after_compiler(&1, argv))
     tracers = Code.get_compiler_option(:tracers)
     Code.put_compiler_option(:tracers, [@tracer_module | tracers])
@@ -29,9 +31,11 @@ defmodule Mix.Tasks.Compile.PrivCheck do
     # Remove the tracer because we're done with it
     tracers = Enum.reject(Code.get_compiler_option(:tracers), &(&1 == @tracer_module))
     Code.put_compiler_option(:tracers, tracers)
+    PrivCheck.TracesManifest.flush([])
 
+    PrivCheck.Mix.load_app()
     app_modules = MapSet.new(app_modules())
-    traces = PrivCheck.Tracer.traces()
+    traces = PrivCheck.TracesManifest.traces()
 
     diagnostics = PrivCheck.ReferenceChecker.diagnostics(traces, app_modules)
 
@@ -45,7 +49,7 @@ defmodule Mix.Tasks.Compile.PrivCheck do
   end
 
   defp app_modules do
-    app = Keyword.fetch!(Mix.Project.config(), :app)
+    app = PrivCheck.Mix.app_name()
     Application.load(app)
     Application.spec(app, :modules)
   end
