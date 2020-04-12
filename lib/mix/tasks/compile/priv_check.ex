@@ -37,7 +37,11 @@ defmodule Mix.Tasks.Compile.PrivCheck do
     app_modules = MapSet.new(app_modules())
     traces = PrivCheck.TracesManifest.traces()
 
-    diagnostics = PrivCheck.ReferenceChecker.diagnostics(traces, app_modules)
+    diagnostics =
+      PrivCheck.ReferenceChecker.diagnostics(traces, app_modules)
+      # Sort the diagnostics for readability (sort by file first then by line
+      # number in the file)
+      |> Enum.sort_by(fn diagnostic -> {diagnostic.file, diagnostic.position} end)
 
     print_diagnostics(diagnostics)
 

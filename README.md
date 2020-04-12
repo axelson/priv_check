@@ -16,6 +16,10 @@ TODO:
 - [x] Fix all errors from a default phoenix application
 - [x] Store the traces in a file so the warnings can be re-generated on partial compiles
 - [x] Provide configuration (allow users to ignore warnings)
+- [x] Sort errors by line number before printing them
+- [x] Ensure errors are rendered in lsp-mode and VSCode
+- [x] Fix RuntimeError.exception/1 from `raise "Some warning"`
+- [x] `Mix.Tasks.Xref.__info__(:functions)` should not be a warning
 
 ## Raison D'etre
 
@@ -52,7 +56,7 @@ end
 ```
 
 In your project's `mix.exs` file in your `project` function add `:priv_check` to
-the list of compilers.
+the list of `:compilers` (adding it if it doesn't already exist).
 
 ```elixir
 def project do

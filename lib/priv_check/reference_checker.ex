@@ -100,6 +100,8 @@ defmodule PrivCheck.ReferenceChecker do
   # Ignore warnings from code generated with macros with `location: :keep`
   # These are detected because the source file location does not match the
   # source file that it was called from
+  defp in_macro_generated_func(nil, _file, _line), do: false
+
   defp in_macro_generated_func(module, file, _line) do
     case module.module_info(:compile)[:source] do
       nil -> true

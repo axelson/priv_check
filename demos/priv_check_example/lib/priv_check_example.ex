@@ -30,8 +30,18 @@ defmodule PrivCheckExample do
     mod = String.to_atom("Elixir.ExampleDep.Private")
     mod.add(1, 2)
 
+    Mix.Tasks.Xref.__info__(:functions)
+
     :ok
   end
 
   ExampleDep.PubMacros.expand_funcs()
+
+  def other(num) do
+    if num == 5 do
+      raise "Boom"
+    else
+      num + 1
+    end
+  end
 end

@@ -39,10 +39,9 @@ defmodule PrivCheck.Tracer do
 
   @ignored_mfa [
     {Module, :__get_attribute__, 3},
-    {Module, :__put_attribute__, 4}
+    {Module, :__put_attribute__, 4},
+    {RuntimeError, :exception, 1}
   ]
-
-  @ignored_files []
 
   def start_link(_) do
     initial_state = %State{
@@ -60,9 +59,6 @@ defmodule PrivCheck.Tracer do
         :ok
 
       ignore_mfa?({module, name, arity}) ->
-        :ok
-
-      ignore_file?(env.file) ->
         :ok
 
       # Code without a line number is generated from a macro (often from a def inside of a __using__ macro)
@@ -136,11 +132,7 @@ defmodule PrivCheck.Tracer do
     defp ignore_mfa?({unquote(mod), unquote(fun), unquote(arity)}), do: true
   end
 
+  defp ignore_mfa?({_, :__info__, 1}), do: true
+
   defp ignore_mfa?(_), do: false
-
-  for file <- @ignored_files do
-    defp ignore_file?(unquote(file)), do: true
-  end
-
-  defp ignore_file?(_), do: false
 end
