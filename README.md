@@ -7,20 +7,6 @@ that is defined as `@doc false`, that module or function should not be called or
 referenced. PrivCheck is a library to generate warnings when private API's are
 called.
 
-## Status
-
-Experimental, and lightly tested.
-
-TODO:
-- [x] Ignore generated code
-- [x] Fix all errors from a default phoenix application
-- [x] Store the traces in a file so the warnings can be re-generated on partial compiles
-- [x] Provide configuration (allow users to ignore warnings)
-- [x] Sort errors by line number before printing them
-- [x] Ensure errors are rendered in lsp-mode and VSCode
-- [x] Fix RuntimeError.exception/1 from `raise "Some warning"`
-- [x] `Mix.Tasks.Xref.__info__(:functions)` should not be a warning
-
 ## Raison D'etre
 
 In Elixir it is quite easy to use private API's without realizing, especially if
@@ -50,7 +36,7 @@ by adding `priv_check` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:priv_check, "~> 0.1.0", only: :dev, runtime: false},
+    {:priv_check, "~> 0.2.0", only: :dev, runtime: false},
   ]
 end
 ```
