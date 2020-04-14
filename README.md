@@ -66,7 +66,7 @@ A configuration file can be provided that allows you to configure the behavior
 of PrivCheck. In the root of your repository (same directory that has the
 `mix.exs`) add a `.priv_check.exs` file. Here are some sample contents:
 
-```
+```elixir
 %{
   # Relative path to files to skip checks for
   ignored_files: ["lib/ignored.ex"],
