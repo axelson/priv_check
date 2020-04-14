@@ -86,11 +86,14 @@ module should not be used by consumers of the library.
 
 After following the [installation](#installation) instructions, when you compile
 any code that accesses a private module or function will generate a warning.
+
 Here is a sample warning:
 
 ```
-warning: ExampleDep.Private.add/2 is not a public function and should not be called from other applications. Called from: PrivCheckExample.
-  lib/priv_check_example.ex:22
+warning: ExampleDep.Private.add/2 is not a public function
+  and should not be called from other applications.
+  Called from: PrivCheckExample.
+  lib/priv_check_example.ex:21
 ```
 
 Because PrivCheck is a mix compiler, it integrates seamlessly with editors which

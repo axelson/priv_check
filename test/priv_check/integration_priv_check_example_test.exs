@@ -81,12 +81,29 @@ defmodule PrivCheck.IntegrationPrivCheckExampleTest do
     |> Stream.map(&String.trim/1)
     |> Stream.chunk_every(4, 1)
     |> Stream.filter(&match?("warning: " <> _, hd(&1)))
-    |> Enum.map(fn ["warning: " <> warning, line_2, line_3, line_4] ->
-      if(String.starts_with?(line_2, "("),
-        do: %{explanation: line_2, callee: line_3, location: line_4},
-        else: %{location: line_2}
-      )
-      |> Map.put(:warning, String.trim(warning))
+    |> Enum.to_list()
+    |> Enum.map(fn
+      ["warning: " <> warning, line2, line3, ""] ->
+        warning_text =
+          [warning, line2]
+          |> Enum.map(&String.trim/1)
+          |> Enum.join(" ")
+
+        %{
+          warning: warning_text,
+          location: line3
+        }
+
+      ["warning: " <> warning, line2, line3, line4] ->
+        warning_text =
+          [warning, line2, line3]
+          |> Enum.map(&String.trim/1)
+          |> Enum.join(" ")
+
+        %{
+          warning: warning_text,
+          location: line4
+        }
     end)
   end
 end
