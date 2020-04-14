@@ -30,19 +30,20 @@ but it has not yet been implemented.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `priv_check` to your list of dependencies in `mix.exs`:
+PrivCheck can be installed by adding `priv_check` to your list of dependencies
+in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:priv_check, "~> 0.2.0", only: :dev, runtime: false},
+    {:priv_check, "~> 0.2.0", only: [:dev, :test], runtime: false},
   ]
 end
 ```
 
-In your project's `mix.exs` file in your `project` function add `:priv_check` to
-the list of `:compilers` (adding it if it doesn't already exist).
+Next, in your project's `mix.exs` file in your `project` function add
+`:priv_check` to the list of `:compilers` (adding it if it doesn't already
+exist).
 
 ```elixir
 def project do
@@ -81,6 +82,27 @@ of PrivCheck. In the root of your repository (same directory that has the
 [ex_doc](https://github.com/elixir-lang/ex_doc)) which is an indication that the
 module should not be used by consumers of the library.
 
+## Usage
+
+After following the [installation](#installation) instructions, when you compile
+any code that accesses a private module or function will generate a warning.
+Here is a sample warning:
+
+```
+warning: ExampleDep.Private.add/2 is not a public function and should not be called from other applications. Called from: PrivCheckExample.
+  lib/priv_check_example.ex:22
+```
+
+Because PrivCheck is a mix compiler, it integrates seamlessly with editors which
+can work with mix compilers. For example, in VSCode with
+[ElixirLS](https://github.com/elixir-lsp/elixir-ls/):
+
+![Detailed Screnshot of a PrivCheck warning](warning-screenshot.png)
+
+And here is how it looks in VSCode's problems list:
+
+![Screenshot of list of problems that PrivCheck raised](warning-problems-screenshot.png)
+
 ## How it Works
 
 PrivCheck uses the compiler tracing feature that was released in Elixir v1.10.
@@ -102,7 +124,7 @@ remote macro.
 
 ## Known Issues
 
-* Doesn't currently work for umbrella projects
+* Returns duplicate-looking warnings [#4](https://github.com/axelson/priv_check/issues/4)
 
 ## Related Concepts and Libraries
 
