@@ -67,7 +67,6 @@ defmodule PrivCheck.Tracer do
 
       true ->
         mfa = {module, name, arity}
-        Logger.debug("remote_function call #{inspect(mfa)} from #{env.module}")
         register_remote_function_call({mfa, env.module, env.file, meta[:line]})
         :ok
     end
@@ -75,7 +74,6 @@ defmodule PrivCheck.Tracer do
 
   def trace({:remote_macro, meta, module, name, arity}, env) do
     mfa = {module, name, arity}
-    Logger.debug("remote_macro call #{inspect(mfa)} from #{env.module}")
     register_remote_macro_call({mfa, env.module, env.file, meta[:line]})
     :ok
   end
