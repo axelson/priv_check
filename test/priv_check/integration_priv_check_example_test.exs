@@ -1,5 +1,5 @@
 defmodule PrivCheck.IntegrationPrivCheckExampleTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   setup_all do
     mix!("priv_check_example", ~w/deps.get/)

@@ -1,5 +1,5 @@
 defmodule PrivCheck.IntegrationPhoenixUmbrellaTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   setup_all do
     mix!("brella_demo_umbrella", ~w/deps.get/)
