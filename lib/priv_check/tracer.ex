@@ -2,9 +2,7 @@
 # analysis
 defmodule PrivCheck.Tracer do
   @moduledoc false
-
   use Agent
-  require Logger
 
   defmodule State do
     @moduledoc """
