@@ -32,6 +32,10 @@ defmodule PrivCheck.IntegrationPhoenixUmbrellaTest do
                  "called from other applications. Called from: BrellaDemoWeb.PageController."
            })
 
+    if length(warnings) > 2 do
+      IO.inspect(warnings, label: "warnings")
+    end
+
     assert length(warnings) == 2
   end
 
