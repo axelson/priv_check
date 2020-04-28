@@ -1,3 +1,8 @@
+# Unreleased
+
+Changes:
+* Add compiler name to the warning (#11)[https://github.com/axelson/priv_check/pull/11]
+
 # 0.2.2 2020-04-18
 
 Changes:

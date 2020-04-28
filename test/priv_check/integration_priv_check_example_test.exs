@@ -21,37 +21,43 @@ defmodule PrivCheck.IntegrationPrivCheckExampleTest do
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:17",
              warning:
-               "Elixir.ExampleDep.Private is not a public module and should not be referenced from other applications."
+               "(PrivCheck) Elixir.ExampleDep.Private is not a public module and should not be " <>
+                 "referenced from other applications."
            })
 
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:20",
              warning:
-               "ExampleDep.Mixed.private/0 is not a public function and should not be called from other applications. Called from: PrivCheckExample."
+               "(PrivCheck) ExampleDep.Mixed.private/0 is not a public function and should not be " <>
+                 "called from other applications. Called from: PrivCheckExample."
            })
 
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:21",
              warning:
-               "Elixir.ExampleDep.Private is not a public module and should not be referenced from other applications."
+               "(PrivCheck) Elixir.ExampleDep.Private is not a public module and should not be " <>
+                 "referenced from other applications."
            })
 
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:21",
              warning:
-               "ExampleDep.Private.add/2 is not a public function and should not be called from other applications. Called from: PrivCheckExample."
+               "(PrivCheck) ExampleDep.Private.add/2 is not a public function and should not be " <>
+                 "called from other applications. Called from: PrivCheckExample."
            })
 
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:22",
              warning:
-               "Elixir.ExampleDep.Private is not a public module and should not be referenced from other applications."
+               "(PrivCheck) Elixir.ExampleDep.Private is not a public module and should not be " <>
+                 "referenced from other applications."
            })
 
     assert Enum.member?(warnings, %{
              location: "lib/priv_check_example.ex:22",
              warning:
-               "ExampleDep.Private.with_doc/0 is not a public function and should not be called from other applications. Called from: PrivCheckExample."
+               "(PrivCheck) ExampleDep.Private.with_doc/0 is not a public function and should not be " <>
+                 "called from other applications. Called from: PrivCheckExample."
            })
 
     assert length(warnings) == 6
