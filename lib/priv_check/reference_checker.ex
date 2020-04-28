@@ -50,7 +50,7 @@ defmodule PrivCheck.ReferenceChecker do
         nil
       else
         message =
-          "#{inspect(mod)}.#{fun}/#{arity} is not a public function\n" <>
+          "(PrivCheck) #{inspect(mod)}.#{fun}/#{arity} is not a public function\n" <>
             "  and should not be called from other applications.\n" <>
             "  Called from: #{inspect(called_from_module)}."
 
@@ -82,7 +82,7 @@ defmodule PrivCheck.ReferenceChecker do
 
         :private ->
           message =
-            "#{referenced_module} is not a public module\n" <>
+            "(PrivCheck) #{referenced_module} is not a public module\n" <>
               "  and should not be referenced from other applications."
 
           diagnostic_error(
